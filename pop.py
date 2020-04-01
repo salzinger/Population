@@ -2,6 +2,7 @@ import scipy as sp
 import numpy as np
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
+import scipy.integrate as integrate
 
 '''
 Overview:
@@ -26,11 +27,11 @@ Initial recovered	The number of recovered individuals at the beginning of the mo
 Days	Controls how long the model will run.
 '''
 
-beta, gamma, sigma, theta = (3, 1/20, 0.5, 0.01/20)
+beta, gamma, sigma, theta = (2, 1/20, 1/10, 0.01)
 
 mu, nu, rho = (0, 0, 0)
 
-susceptible, exposed, infected, recovered, dead = (7*10**9, 1, 0, 0, 0)
+susceptible, exposed, infected, recovered, dead = (10**7, 0, 100, 0, 0)
 
 N = susceptible + exposed + infected + recovered + dead
 
@@ -44,26 +45,84 @@ def seirs(t, z):
             0]
 
 
-sol = solve_ivp(seirs, [0, 1800], [susceptible, exposed, infected, recovered, dead, N], dense_output=True)
+sol = solve_ivp(seirs, [0, 100], [susceptible, exposed, infected, recovered, dead, N], dense_output=True)
 
-print(sol)
+#print(sol)
 
-fig, ax = plt.subplots()
-ax.plot(sol.t, sol.y[0], label="Susceptible", marker='', linestyle='-')
-ax.plot(sol.t, sol.y[1], label="Exposed", marker='', linestyle='-',color='orange')
-ax.plot(sol.t, sol.y[2], label="Infected", marker='', linestyle='-',color='r')
-ax.plot(sol.t, sol.y[3], label="Recovered", marker='', linestyle='-',color='g')
-ax.plot(sol.t, sol.y[4], label="Dead", marker='', linestyle='--',color='grey')
-ax.plot(sol.t, sol.y[5], label="Total", marker='',color='grey')
+def opener(i):
+    data=[]
+    file = open('dat.txt')
+    country = file.readline().split()[i+1]
+    file.close()
+    file = open('dat.txt')
+    for line in file:
+        try:
+            data.append(float(line.split()[i+1]))
+        except:
+            None
+    file.close()
+    return country,data
+
+t=0
+print(opener(1))
+
+
+'''
+Spain=[line.split()[2] for line in file]
+France=[line.split()[3] for line in file]
+Germany=[line[0:2] for line in file]
+US=[line[0:2] for line in file]
+UK=[line[0:2] for line in file]
+Belgium=[line[0:2] for line in file]
+Netherlands=[line[0:2] for line in file]
+Norway=[line[0:2] for line in file]
+Sweden=[line[0:2] for line in file]
+Switzerland=[line[0:2] for line in file]
+Austria=[line[0:2] for line in file]
+Australia=[line[0:2] for line in file]
+Canada=[line[0:2] for line in file]
+Israel=[line[0:2] for line in file]
+Brazil=[line[0:2] for line in file]
+Portugal=[line[0:2] for line in file]
+Turkey=[line[0:2] for line in file]
+'''
+
+
+
+
+fig, ax = plt.subplots(2,1)
 plt.yscale('log')
-plt.ylim(1,10**10)
+ax[0].plot(sol.t, sol.y[0], label="Susceptible", marker='', linestyle='-')
+ax[0].plot(sol.t, sol.y[1], label="Exposed", marker='', linestyle='-',color='orange')
+ax[0].plot(sol.t, sol.y[2], label="Infected", marker='', linestyle='-',color='r')
+ax[0].plot(sol.t, sol.y[3], label="Recovered", marker='', linestyle='-',color='g')
+ax[0].plot(sol.t, sol.y[4], label="Dead", marker='', linestyle='--',color='grey')
+ax[0].plot(sol.t, sol.y[5], label="Total", marker='',color='grey')
+#plt.ylim(1,10**10)
 # ax.plot(times, result.expect[1],label="MagnetizationZ",linestyle='--',marker='o',markersize='2');
 # ax.plot(times, result.expect[2],label="Exp(SigmaZ,0)");
 # ax.plot(times, result.expect[3],label="Exp(SigmaX,0)",linestyle='--');
 # ax.plot(times, np.abs(ups),label="Tr(rho_0,uu)",linestyle='--');
 # ax.plot(times, np.abs(downs),label="Tr(rho_0,dd)",linestyle='-');
-ax.set_xlabel('Days')
-ax.set_ylabel('')
-leg = plt.legend(loc='best', ncol=1, shadow=True, fancybox=True)
-leg.get_frame().set_alpha(0.5)
+ax[0].set_xlabel('Days')
+ax[0].set_ylabel('')
+ax[0].legend(loc="upper right")
+
+
+for i in range(0,20):
+    try:
+        ax[1].plot(range(0, len(opener(i)[1])), opener(i)[1], label=opener(i)[0], marker='o', linestyle='', markersize='2')
+    except:
+        None
+ax[1].plot(sol.t, sol.y[2]+sol.y[3]+sol.y[4], label="Total Infected", marker='', linestyle='-',color='r')
+
+#plt.ylim(1,10**10)
+# ax.plot(times, result.expect[1],label="MagnetizationZ",linestyle='--',marker='o',markersize='2');
+# ax.plot(times, result.expect[2],label="Exp(SigmaZ,0)");
+# ax.plot(times, result.expect[3],label="Exp(SigmaX,0)",linestyle='--');
+# ax.plot(times, np.abs(ups),label="Tr(rho_0,uu)",linestyle='--');
+# ax.plot(times, np.abs(downs),label="Tr(rho_0,dd)",linestyle='-');
+ax[1].set_xlabel('Days')
+ax[1].set_ylabel('')
+ax[1].legend(loc="right")
 plt.show()
