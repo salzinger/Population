@@ -1,4 +1,4 @@
-Days 	Italy 	Spain 	France 	Germany 	US 	UK 	Belgium 	Netherlands 	Norway 	Sweden 	Switzerland 	Austria 	Australia Canada 	Israel 	Brazil 	Portugal 	Turkey
+Days Italy Spain France Germany US UK Belgium Netherlands Norway Sweden Switzerland Austria Australia Denmark Canada Israel Brazil Czechia Portugal Ireland Chile Russia Turkey
 0 	155 	84 	191 	159 	149 	116 	109 	128 	108 	101 	214 	104 	107 	108 	100 	151 	112 	192
 1 	229 	120 	204 	196 	217 	164 	169 	188 	147 	161 	268 	131 	128 	117 	126 	151 	169 	359
 2 	322 	165 	288 	262 	262 	207 	200 	265 	176 	203 	337 	182 	128 	193 	155 	162 	245 	670

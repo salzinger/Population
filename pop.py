@@ -27,11 +27,11 @@ Initial recovered	The number of recovered individuals at the beginning of the mo
 Days	Controls how long the model will run.
 '''
 
-beta, gamma, sigma, theta = (2, 1/20, 1/10, 0.01)
+beta, gamma, sigma, theta = (2.6, 1/20, 1/20, 0.01)
 
 mu, nu, rho = (0, 0, 0)
 
-susceptible, exposed, infected, recovered, dead = (10**7, 0, 100, 0, 0)
+susceptible, exposed, infected, recovered, dead = (10**6, 0, 150, 0, 0)
 
 N = susceptible + exposed + infected + recovered + dead
 
@@ -45,7 +45,7 @@ def seirs(t, z):
             0]
 
 
-sol = solve_ivp(seirs, [0, 100], [susceptible, exposed, infected, recovered, dead, N], dense_output=True)
+sol = solve_ivp(seirs, [0, 120], [susceptible, exposed, infected, recovered, dead, N], dense_output=True)
 
 #print(sol)
 
@@ -54,7 +54,7 @@ def opener(i):
     file = open('dat.txt')
     country = file.readline().split()[i+1]
     file.close()
-    file = open('dat.txt')
+    file = open('newdat.txt')
     for line in file:
         try:
             data.append(float(line.split()[i+1]))
@@ -109,14 +109,13 @@ ax[0].set_ylabel('')
 ax[0].legend(loc="upper right")
 
 
-for i in range(0,20):
+for i in range(0,24):
     try:
         ax[1].plot(range(0, len(opener(i)[1])), opener(i)[1], label=opener(i)[0], marker='o', linestyle='', markersize='2')
     except:
         None
 ax[1].plot(sol.t, sol.y[2]+sol.y[3]+sol.y[4], label="Total Infected", marker='', linestyle='-',color='r')
-
-#plt.ylim(1,10**10)
+plt.xlim(0,60)
 # ax.plot(times, result.expect[1],label="MagnetizationZ",linestyle='--',marker='o',markersize='2');
 # ax.plot(times, result.expect[2],label="Exp(SigmaZ,0)");
 # ax.plot(times, result.expect[3],label="Exp(SigmaX,0)",linestyle='--');
