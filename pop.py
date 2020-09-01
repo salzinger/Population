@@ -44,9 +44,26 @@ def seirs(t, z):
             theta*I,                               #dead
             0]
 
+Gamma, Omega, Delta = (6, 40,0)
 
-sol = solve_ivp(seirs, [0, 120], [susceptible, exposed, infected, recovered, dead, N], dense_output=True)
+gg0, ee0, rr0, REge0, IMge0, REgr0, IMgr0, REer0, IMer0, trace0 = (0, 0, 1, 0, 0, 0, 0, 0, 0, 1)
 
+def coherence(t, z):
+    gg, ee, rr, REge, IMge, REgr, IMgr, REer, IMer, trace = z
+    return [Gamma * ee,
+            - Omega * IMer - Gamma * ee,
+            Omega * IMer,
+            - Gamma/2 * (REge + IMge),
+            Omega/2 * (REgr + IMgr) - Delta * (REge + IMge),
+            0,
+            Omega/2 * (REge + IMge) - Delta * (REgr + IMgr),
+            - Gamma/2 * (REge + IMer),
+            Omega/2 * (ee - rr) - Delta * (REer + IMer),
+            0]
+
+
+#sol = solve_ivp(seirs, [0, 120], [susceptible, exposed, infected, recovered, dead, N], dense_output=True)
+sol = solve_ivp(coherence, [0, 1], [gg0, ee0, rr0, REge0, IMge0, REgr0, IMgr0, REer0, IMer0, trace0], dense_output=True)
 #print(sol)
 
 def opener(i):
@@ -91,37 +108,44 @@ Turkey=[line[0:2] for line in file]
 
 
 fig, ax = plt.subplots(2,1)
-plt.yscale('log')
-ax[0].plot(sol.t, sol.y[0], label="Susceptible", marker='', linestyle='-')
-ax[0].plot(sol.t, sol.y[1], label="Exposed", marker='', linestyle='-',color='orange')
-ax[0].plot(sol.t, sol.y[2], label="Infected", marker='', linestyle='-',color='r')
-ax[0].plot(sol.t, sol.y[3], label="Recovered", marker='', linestyle='-',color='g')
-ax[0].plot(sol.t, sol.y[4], label="Dead", marker='', linestyle='--',color='grey')
-ax[0].plot(sol.t, sol.y[5], label="Total", marker='',color='grey')
+#plt.yscale('log')
+ax[0].plot(sol.t, sol.y[0], label="gg", marker='', linestyle='-')
+ax[0].plot(sol.t, sol.y[1], label="ee", marker='', linestyle='-',color='orange')
+ax[0].plot(sol.t, sol.y[2], label="rr", marker='', linestyle='-',color='r')
+#ax[0].plot(sol.t, sol.y[3], label="Recovered", marker='', linestyle='-',color='g')
+#ax[0].plot(sol.t, sol.y[4], label="Dead", marker='', linestyle='--',color='grey')
+#ax[0].plot(sol.t, sol.y[5], label="Total", marker='',color='grey')
 #plt.ylim(1,10**10)
 # ax.plot(times, result.expect[1],label="MagnetizationZ",linestyle='--',marker='o',markersize='2');
 # ax.plot(times, result.expect[2],label="Exp(SigmaZ,0)");
 # ax.plot(times, result.expect[3],label="Exp(SigmaX,0)",linestyle='--');
 # ax.plot(times, np.abs(ups),label="Tr(rho_0,uu)",linestyle='--');
 # ax.plot(times, np.abs(downs),label="Tr(rho_0,dd)",linestyle='-');
-ax[0].set_xlabel('Days')
-ax[0].set_ylabel('')
+#ax[0].set_xlabel('Days')
+#ax[0].set_ylabel('')
 ax[0].legend(loc="upper right")
 
 
 for i in range(0,24):
     try:
-        ax[1].plot(range(0, len(opener(i)[1])), opener(i)[1], label=opener(i)[0], marker='o', linestyle='', markersize='2')
+        None#ax[1].plot(range(0, len(opener(i)[1])), opener(i)[1], label=opener(i)[0], marker='o', linestyle='', markersize='2')
     except:
         None
-ax[1].plot(sol.t, sol.y[2]+sol.y[3]+sol.y[4], label="Total Infected", marker='', linestyle='-',color='r')
-plt.xlim(0,60)
+#ax[1].plot(sol.t, sol.y[2]+sol.y[3]+sol.y[4], label="Total Infected", marker='', linestyle='-',color='r')
+#plt.xlim(0,60)
+
+ax[1].plot(sol.t, sol.y[3], label="Re[ge]", marker='', linestyle='-')
+ax[1].plot(sol.t, sol.y[4], label="Im[ge]", marker='', linestyle='-',color='orange')
+ax[1].plot(sol.t, sol.y[5], label="Re[gr]", marker='', linestyle='-',color='r')
+ax[1].plot(sol.t, sol.y[6], label="Im[gr]", marker='', linestyle='-',color='g')
+ax[1].plot(sol.t, sol.y[7], label="Re[er]", marker='', linestyle='--',color='grey')
+ax[1].plot(sol.t, sol.y[8], label="Im[er]", marker='',color='grey')
 # ax.plot(times, result.expect[1],label="MagnetizationZ",linestyle='--',marker='o',markersize='2');
 # ax.plot(times, result.expect[2],label="Exp(SigmaZ,0)");
 # ax.plot(times, result.expect[3],label="Exp(SigmaX,0)",linestyle='--');
 # ax.plot(times, np.abs(ups),label="Tr(rho_0,uu)",linestyle='--');
 # ax.plot(times, np.abs(downs),label="Tr(rho_0,dd)",linestyle='-');
-ax[1].set_xlabel('Days')
-ax[1].set_ylabel('')
+#ax[1].set_xlabel('Days')
+#ax[1].set_ylabel('')
 ax[1].legend(loc="right")
 plt.show()
