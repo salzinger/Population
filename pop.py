@@ -3,6 +3,7 @@ import numpy as np
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 import scipy.integrate as integrate
+import sdeint
 
 '''
 Overview:
@@ -107,7 +108,7 @@ Turkey=[line[0:2] for line in file]
 
 
 
-fig, ax = plt.subplots(2,1)
+fig, ax = plt.subplots(3,1)
 #plt.yscale('log')
 ax[0].plot(sol.t, sol.y[0], label="gg", marker='', linestyle='-')
 ax[0].plot(sol.t, sol.y[1], label="ee", marker='', linestyle='-',color='orange')
@@ -148,4 +149,24 @@ ax[1].plot(sol.t, sol.y[8], label="Im[er]", marker='',color='grey')
 #ax[1].set_xlabel('Days')
 #ax[1].set_ylabel('')
 ax[1].legend(loc="right")
+#plt.show()
+
+A = np.array([[-0.1, 0.5],
+              [-0.5, 0.1]])
+
+B = np.diag([0.5, 0.5]) # diagonal, so independent driving Wiener processes
+B = np.array([[-0.0, -5],
+              [0.0, 0]])
+tspan = np.linspace(0.0, 10.0, 10001)
+x0 = np.array([1.0, 0.1])
+
+def f(x, t):
+    return A.dot(x)
+
+def G(x, t):
+    return B
+
+result = sdeint.stratint(f, G, x0, tspan)
+print(result)
+ax[2].plot(tspan, result)
 plt.show()
